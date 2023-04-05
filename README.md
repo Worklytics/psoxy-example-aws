@@ -49,6 +49,13 @@ terraform plan
 terraform apply
 ```
 
+## License
+
+The source code contained in this repo is licensed under the [Apache License, Version 2.0](LICENSE).
+
+Usage of terraform, psoxy, or other tooling invoked by scripts in this repo or described in the
+example tutorials it contains are each subject to their own license terms.
+
 ## Support
 
 This example repo is maintained by [Worklytics](https://worklytics.co). Paid support is available.
