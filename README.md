@@ -15,8 +15,8 @@ See [GitHub's documentation](https://help.github.com/en/github/creating-cloning-
 for more details.
 
  1. Click the 'Use this template' button in the upper right corner of [this page](https://github.com/Worklytics/psoxy-example-aws).
-   - choose a name for your copy of this repo
-   - leave "Include all branches" unchecked
+    - choose a name for your copy of this repo
+    - leave "Include all branches" unchecked
 
  2. Clone the resulting repo to your machine.
 
