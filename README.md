@@ -11,6 +11,15 @@ proxy (psoxy)](https://github.com/Worklytics/psoxy) on AWS.
 
 This is a template repo.  To use it, follow the instructions below.
 
+### Prereqs
+
+You'll need
+  - a Bash-like shell environment on Linux, MacOS, or [WSL on Windows](https://learn.microsoft.com/en-us/windows/wsl/install).
+  - [`git` installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), although it
+    usually is by default on those platforms (check with `git --version`).
+
+### Setup
+
 See [GitHub's documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template)
 for more details.
 
