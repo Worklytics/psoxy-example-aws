@@ -27,10 +27,11 @@ for more details.
     - choose a name for your copy of this repo
     - leave "Include all branches" unchecked
 
- 2. Clone the resulting repo to your machine.
+ 2. Clone the resulting repo to your machine.  Example command below, just fill in your org and repo
+    names.
 
 ```shell
-git clone
+git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
 ```
  3. Check your prereqs. Review versions and install anything needed.
 
