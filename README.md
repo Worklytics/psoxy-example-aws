@@ -13,10 +13,10 @@ This is a template repo.  To use it, follow the instructions below.
 
 ### Prereqs
 
-You'll need
+You'll need:
   - a Bash-like shell environment on Linux, MacOS, or [WSL on Windows](https://learn.microsoft.com/en-us/windows/wsl/install).
   - [`git` installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), although it
-    usually is by default on those platforms (check with `git --version`).
+    is usually included on those platforms (check with `git --version`).
 
 ### Setup
 
