@@ -18,7 +18,7 @@ for more details.
    - choose a name for your copy of this repo
    - leave "Include all branches" unchecked
 
- 2.Clone the resulting repo to your machine. Eg
+ 2. Clone the resulting repo to your machine.
 
 ```shell
 git clone
@@ -34,3 +34,23 @@ git clone
 ```shell
 ./init
 ```
+
+ 5. Review your `terraform.tfvars` file; customize as needed (eg, comment out datasources you don't need).
+
+ 6. Run `terraform plan` and review results to understand what will be created. Customize your
+    `terraform.tfvars` or `main.tf` file if needed.
+
+```shell
+terraform plan
+```
+
+ 7. Run `terraform apply` to create the resources.
+```shell
+terraform apply
+```
+
+## Support
+
+This example repo is maintained by [Worklytics](https://worklytics.co). Paid support is available.
+Please contact [sales@worklytics.co](mailto:sales@worklytics.co).
+
