@@ -130,22 +130,12 @@ variable "general_environment_variables" {
 variable "pseudonymize_app_ids" {
   type        = string
   description = "if set, will set value of PSEUDONYMIZE_APP_IDS environment variable to this value for all sources"
-  default     = false
+  default     = true
 }
 
 variable "enabled_connectors" {
   type        = list(string)
   description = "list of ids of connectors to enabled; see modules/worklytics-connector-specs"
-
-  default = [
-    "azure-ad",
-    "outlook-cal",
-    "outlook-mail",
-    "asana",
-    "hris",
-    "slack-discovery-api",
-    "zoom",
-  ]
 }
 
 variable "non_production_connectors" {
@@ -156,14 +146,20 @@ variable "non_production_connectors" {
 
 variable "bulk_input_expiration_days" {
   type        = number
-  description = "**alpha** Number of days after which objects in the bucket will expire. This could be as low as 1 day; longer aids debugging of issues."
+  description = "Number of days after which objects in the bucket will expire. This could be as low as 1 day; longer aids debugging of issues."
   default     = 30
 }
 
 variable "bulk_sanitized_expiration_days" {
   type        = number
-  description = "**alpha** Number of days after which objects in the bucket will expire. In practice, Worklytics syncs data ~weekly, so 30 day minimum for this value."
-  default     = 720
+  description = "Number of days after which objects in the bucket will expire. In practice, Worklytics syncs data ~weekly, so 30 day minimum for this value."
+  default     = 1805 # 5 years; intent is 'forever', but some upperbound in case bucket is forgotten
+}
+
+variable "custom_rest_rules" {
+  type        = map(string)
+  description = "map of connector id --> YAML file with custom rules"
+  default     = {}
 }
 
 variable "custom_bulk_connectors" {
@@ -235,4 +231,3 @@ variable "lookup_table_builders" {
     #    }
   }
 }
-
