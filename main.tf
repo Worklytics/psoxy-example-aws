@@ -56,8 +56,8 @@ provider "azuread" {
 }
 
 module "psoxy" {
-  # source = "../psoxy/infra/modular-examples/aws"
-  source = "git::https://github.com/worklytics/psoxy//infra/modular-examples/aws?ref=v0.4.17"
+  # source = "../../modular-examples/aws"
+  source = "git::https://github.com/worklytics/psoxy//infra/modular-examples/aws?ref=v0.4.18"
 
   aws_account_id                 = var.aws_account_id
   aws_assume_role_arn            = var.aws_assume_role_arn # role that can test the instances (lambdas)
@@ -71,6 +71,7 @@ module "psoxy" {
   non_production_connectors      = var.non_production_connectors
   connector_display_name_suffix  = var.connector_display_name_suffix
   custom_bulk_connectors         = var.custom_bulk_connectors
+  custom_rest_rules              = var.custom_rest_rules
   lookup_table_builders          = var.lookup_table_builders
   msft_tenant_id                 = var.msft_tenant_id
   msft_owners_email              = var.msft_owners_email

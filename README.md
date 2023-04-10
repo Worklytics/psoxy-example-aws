@@ -17,6 +17,9 @@ You'll need:
   - a Bash-like shell environment on Linux, MacOS, or [WSL on Windows](https://learn.microsoft.com/en-us/windows/wsl/install).
   - [`git` installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), although it
     is usually included on those platforms (check with `git --version`).
+  - an AWS account and credentials, as described in [Psoxy's AWS - Getting Started docs](https://github.com/Worklytics/psoxy/blob/v0.4.18/docs/aws/getting-started.md)
+  - the [prerequisites for Psoxy](https://github.com/Worklytics/psoxy/blob/v0.4.18/README.md#prerequisites)
+    itself, although this example will attempt to help you check those
 
 ### Setup
 
@@ -39,22 +42,28 @@ git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
 ./check-prereqs
 ```
 
- 4. Initialize your configuration
+ 4. Authenticate your tools as needed:
+
+   - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) - `aws get-caller-identity` should work and return your expected account/user
+   - if plan to get data from Google Workspace, auth [GCloud CLI](https://cloud.google.com/sdk/docs/authorizing) - `gcloud auth login` to authenticate, then `gcloud auth list` to verify you have expected account/user
+   - if plan to get data from Microsoft 365, auth [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) - `az login --allow-no-subscription` to authenticate, then `az account list` to verify you have expected account/user
+
+ 5. Initialize your configuration
 
 ```shell
 ./init
 ```
 
- 5. Review your `terraform.tfvars` file; customize as needed (eg, comment out datasources you don't need).
+ 6. Review your `terraform.tfvars` file; customize as needed (eg, comment out datasources you don't need).
 
- 6. Run `terraform plan` and review results to understand what will be created. Customize your
+ 7. Run `terraform plan` and review results to understand what will be created. Customize your
     `terraform.tfvars` or `main.tf` file if needed.
 
 ```shell
 terraform plan
 ```
 
- 7. Run `terraform apply` to create the resources.
+ 8. Run `terraform apply` to create the resources.
 ```shell
 terraform apply
 ```
