@@ -43,7 +43,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
-          role-session-name: ${{ GITHUB_ACTION }}-${{ GITHUB_ACTOR }}-${{ GITHUB_RUN_ID }}
+          role-session-name: ${{ env.GITHUB_ACTION }}-${{ env.GITHUB_ACTOR }}-${{ env.GITHUB_RUN_ID }}
           aws-region: ${{ env.AWS_REGION }}
 
       # TODO: auth GCP for Google Workspace sources
