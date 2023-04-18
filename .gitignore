@@ -10,8 +10,9 @@ last-build.log
 # what we want for template repo atm
 .idea
 
+# patterns below are ignored to avoid inadvertently committing test/development files to repo
 # TODO: when this repo is ready to be used as template Terraform config, everything below should
-# be removed and these files committed to actual config repo IF they exist
+# be removed and these files committed to actual config repo if they exist
 
 terraform.tfvars
 

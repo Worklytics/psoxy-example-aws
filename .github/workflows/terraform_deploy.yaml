@@ -1,0 +1,53 @@
+name: 'Terraform deploy'
+
+# allows this workflow to be triggered manually
+on: workflow_dispatch
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  terraform_apply:
+    name: 'terraform_apply'
+    runs-on: ubuntu-latest
+    env:
+      TERRAFORM_VERSION: 1.3.9
+
+      # NOTE: this role must be configured with trust policy, per https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+      # and have sufficient perms, per https://github.com/Worklytics/psoxy/blob/main/docs/aws/getting-started.md#prerequisites
+      AWS_REGION: us-east-1
+      AWS_ACCOUNT_ID: 874171213677
+      AWS_ROLE_TO_ASSUME: github-actions-terraform-apply
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: 'setup Terraform'
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      # use https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+      - name: authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
+          role-session-name: ${GITHUB_ACTION}-${GITHUB_ACTOR}-${GITHUB_RUN_ID}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # TODO: auth GCP for Google Workspace sources
+
+      # TODO: auth Azure CLI for MSFT 365 sources
+
+      # for now, just use connectors that don't need GCP/MSFT
+      - name: 'Terraform init and apply'
+        run: |
+          terraform init
+          terraform apply -auto-approve \
+            -var="aws_region=${{ env.AWS_REGION }}" \
+            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
+            -var="psoxy_base_dir=${GITHUB_WORKSPACE}/.terraform/modules/psoxy/" \
+            -var="enabled_connectors=[\"zoom\",\"hris\"]"
+
