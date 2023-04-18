@@ -47,13 +47,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       # TODO: auth GCP for Google Workspace sources
-      - id: gcp-oidc
-        name: authenticate to GCP
-        uses: google-github-actions/auth@v0.3.1
-        with:
-          create_credentials_file: true
-          workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+#      - id: gcp-oidc
+#        name: authenticate to GCP
+#        uses: google-github-actions/auth@v0.3.1
+#        with:
+#          create_credentials_file: true
+#          workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
       # TODO: auth Azure CLI for MSFT 365 sources
 
