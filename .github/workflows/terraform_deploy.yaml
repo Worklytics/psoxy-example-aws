@@ -64,6 +64,6 @@ jobs:
           terraform apply -auto-approve \
             -var="aws_region=${{ env.AWS_REGION }}" \
             -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
-            -var="psoxy_base_dir=${GITHUB_WORKSPACE}/.terraform/modules/psoxy/" \
+            -var="psoxy_base_dir=${{ env.GITHUB_WORKSPACE }}/.terraform/modules/psoxy/" \
             -var="enabled_connectors=[\"zoom\",\"hris\"]"
 
