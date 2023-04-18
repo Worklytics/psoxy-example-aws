@@ -47,7 +47,6 @@ jobs:
         if: ${{ env.AWS_ACCOUNT_ID != null }}
         with:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
-          role-session-name: ${{ env.GITHUB_ACTION }}-${{ env.GITHUB_ACTOR }}-${{ env.GITHUB_RUN_ID }}
           aws-region: ${{ env.AWS_REGION }}
 
       - id: gcp-oidc
