@@ -2,9 +2,11 @@
 
 # Psoxy init script
 #
-# this is meant to be run from within a Terraform configuration for Psoxy, modeled on one of our
+# this is meant to be run from within a Terraform configuration for Psoxy modeled on one of our
 # examples
 # see: https://github.com/Worklytics/psoxy/tree/main/infra/examples
+# NOTE: this script is not meant to be run from a cloud runner environment, such as GitHub Actions,
+#  Terraform Cloud, Terraform Enterprise, etc.
 
 # colors
 RED='\e[0;31m'
