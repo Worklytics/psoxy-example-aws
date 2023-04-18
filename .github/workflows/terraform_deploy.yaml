@@ -19,16 +19,16 @@ jobs:
       # and you must have added GitHub as an OIDC provider in the AWS Account
       AWS_REGION: us-east-1
       AWS_ACCOUNT_ID: 874171213677
-      AWS_ROLE_TO_ASSUME: github-actions-terraform-apply
+      AWS_ROLE_TO_ASSUME: github-actions
 
 
       # NOTE: must have identity pool + service account in GCP, as described https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
-      # GCP_PROJECT_ID: psoxy-erik-dev
+      GCP_PROJECT_ID: psoxy-dev-erik
       GCP_NUMERIC_PROJECT_ID: 1012889821883
       GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/github-actions/providers/github'
       GCP_SERVICE_ACCOUNT: github-actions@psoxy-erik-dev.iam.gserviceaccount.com
 
-      # MSFT365_TENANT_ID: 9b0e1b0e-1b0e-1b0e-1b0e-1b0e1b0e1b0e
+      MSFT365_TENANT_ID: null # 9b0e1b0e-1b0e-1b0e-1b0e-1b0e1b0e1b0e
       # AZURE_AD_OIDC_CLIENT_ID:
 
     steps:
