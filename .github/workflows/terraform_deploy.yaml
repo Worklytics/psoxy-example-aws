@@ -1,7 +1,7 @@
 name: 'Terraform deploy'
 
 # allows this workflow to be triggered manually
-on: workflow_dispatch
+on: [push, workflow_dispatch]
 
 permissions:
   id-token: write   # This is required for requesting the JWT
