@@ -1,4 +1,4 @@
-name: 'Terraform deploy'
+name: 'Terraform plan / apply'
 
 
 on:
@@ -17,8 +17,8 @@ permissions:
   contents: read    # This is required for actions/checkout
 
 jobs:
-  terraform_apply:
-    name: 'terraform_apply'
+  terraform_plan_apply:
+    name: 'terraform_plan_apply'
     runs-on: ubuntu-latest
     env:
       TERRAFORM_VERSION: 1.3.9
