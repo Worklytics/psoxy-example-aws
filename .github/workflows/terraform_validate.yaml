@@ -29,7 +29,6 @@ jobs:
       - id: gcp-oidc
         name: authenticate to GCP
         uses: google-github-actions/auth@v1.1.0
-        if: ${{ env.GCP_PROJECT_ID != null }}
         with:
           create_credentials_file: true
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
