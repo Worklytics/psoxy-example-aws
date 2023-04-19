@@ -26,16 +26,18 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: 'Terraform - validate'
-        run: |
-          terraform init -reconfigure -backend-config=${{env.BACKEND_CONFIG_FILE }}
-          terraform validate
-
       - id: gcp-oidc
         name: authenticate to GCP
-        uses: google-github-actions/auth@v0.3.1
+        uses: google-github-actions/auth@v1.1.0
         if: ${{ env.GCP_PROJECT_ID != null }}
         with:
           create_credentials_file: true
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+
+      - name: 'Terraform - validate'
+        run: |
+          terraform init -reconfigure -backend-config=${{env.BACKEND_CONFIG_FILE }}
+          terraform validate
+
+

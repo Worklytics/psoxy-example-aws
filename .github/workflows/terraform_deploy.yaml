@@ -38,7 +38,7 @@ jobs:
 
       # NOTE: must have identity pool + service account in GCP, as described https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
       GCP_PROJECT_ID: psoxy-dev-erik
-      GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/github-actions/providers/github'
+      GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/github-actions/providers/github
       GCP_SERVICE_ACCOUNT: github-actions@psoxy-erik-dev.iam.gserviceaccount.com
 
       MSFT365_TENANT_ID: 6e4c8e9f-76cf-41d1-806e-61838b880b87
@@ -71,7 +71,7 @@ jobs:
 
       - id: gcp-oidc
         name: authenticate to GCP
-        uses: google-github-actions/auth@v0.3.1
+        uses: google-github-actions/auth@v1.1.0
         if: ${{ env.GCP_PROJECT_ID != null }}
         with:
           create_credentials_file: true
