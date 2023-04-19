@@ -60,14 +60,28 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
+      - name: Determine Terraform Providers
+        run: |
+          echo "AWS_PROVIDER_COUNT=$(terraform providers | grep "^├── provider\[registry.terraform.io/hashicorp/aws" | wc -l)" >> $GITHUB_OUTPUT
+          echo "GOOGLE_PROVIDER_COUNT=$(terraform providers | grep "^├── provider\[registry.terraform.io/hashicorp/google" | wc -l)" >> $GITHUB_OUTPUT
+          echo "AZUREAD_PROVIDER_COUNT=$(terraform providers | grep "^├── provider\[registry.terraform.io/hashicorp/azuread" | wc -l)" >> $GITHUB_OUTPUT
+        id: terraform_providers
+
+      - name: Retrieve AWS config values
+        if: ${{ steps.terraform_providers.outputs.AWS_PROVIDER_COUNT > 0 }}
+        run: |
+          echo "ACCOUNT_ID=$(echo "var.aws_account_id" | terraform console | tr -d '\"\'" >> $GITHUB_OUTPUT
+          echo "REGION=$(echo "var.aws_region" | terraform console | tr -d '\"\'" >> $GITHUB_OUTPUT
+        id: aws
+
       # use https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
       - id: aws-oidc
         name: authenticate to AWS
         uses: aws-actions/configure-aws-credentials@v2
-        if: ${{ env.AWS_ACCOUNT_ID != null }}
+        if: ${{ steps.aws.ACCOUNT_ID != null }}
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ steps.aws.REGION }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ steps.aws.REGION }}
 
       - id: gcp-oidc
         name: authenticate to GCP
@@ -94,25 +108,31 @@ jobs:
             -backend-config=${{env.BACKEND_CONFIG_FILE }}
 
       # plan
-      # TODO : replace with https://github.com/marketplace/actions/terraform-plan
+      # see https://github.com/marketplace/actions/terraform-plan
       - name: 'Terraform plan'
         if: github.event_name != 'workflow_dispatch'
-        run: |
-          terraform plan \
-            -var="aws_region=${{ env.AWS_REGION }}" \
-            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
-            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
-            -var-file=${{ env.TFVARS_FILE }}
+        uses: dflook/terraform-plan@v1.29.1
+        with:
+          backend_config_file: ${{ env.BACKEND_CONFIG_FILE }}
+          variables: |
+            aws_region="${{ env.AWS_REGION }}"
+            aws_account_id=${{ env.AWS_ACCOUNT_ID }}
+            psoxy_base_dir="${{ github.workspace }}/.terraform/modules/psoxy/"
+          var-file: ${{ env.TFVARS_FILE }}
 
-      # TODO : replace with https://github.com/marketplace/actions/terraform-apply
+      # see https://github.com/marketplace/actions/terraform-apply
       - name: 'Terraform apply'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
-        run: |
-          terraform apply --auto-approve \
-            -var="aws_region=${{ env.AWS_REGION }}" \
-            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
-            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
-            -var-file=${{ env.TFVARS_FILE }}
+        uses: dflook/terraform-apply@v1.29.1
+        with:
+          auto_approve: true
+          backend_config_file: ${{ env.BACKEND_CONFIG_FILE }}
+          variables: |
+            aws_region="${{ env.AWS_REGION }}"
+            aws_account_id=${{ env.AWS_ACCOUNT_ID }}
+            psoxy_base_dir="${{ github.workspace }}/.terraform/modules/psoxy/"
+          var_file: ${{ env.TFVARS_FILE }}
+
 
       - name: 'Collect TODO artifacts'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
