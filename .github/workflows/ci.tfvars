@@ -1,4 +1,4 @@
-environment_name= "example-aws-ci"
+environment_name= "ex-aws-ci"
 enabled_connectors = [
   "azure-ad",
   "gdirectory",
