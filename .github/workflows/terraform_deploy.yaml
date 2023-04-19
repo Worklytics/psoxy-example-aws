@@ -1,7 +1,16 @@
 name: 'Terraform deploy'
 
-# allows this workflow to be triggered manually
-on: [push, workflow_dispatch]
+
+on:
+  push: # run on all pushes
+    branches:
+      - '**'
+  workflow_dispatch:  # allows this workflow to be triggered manually ( `gh workflow run terraform_deploy.yaml -f apply=true --ref=s147-github-action-deploy` )
+    inputs:
+      apply:
+        description: 'Whether to apply terraform configuration, not just plan'
+        required: true
+        default: 'false'
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -67,16 +76,24 @@ jobs:
           tenant-id: ${{ env.MSFT365_TENANT_ID }}
 
       # for now, just use connectors that don't need GCP/MSFT
-      - name: 'Terraform init and apply'
+      - name: 'Terraform init'
         run: |
           terraform init
+
+      - name: 'Terraform plan'
+        if: github.event_name != 'workflow_dispatch'
+        run: |
           terraform plan \
             -var="aws_region=${{ env.AWS_REGION }}" \
             -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
             -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
             -var-file=./.github/workflows/ci.tfvars
-#          terraform apply --auto-approve \
-#            -var="aws_region=${{ env.AWS_REGION }}" \
-#            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
-#            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
-#            -var-file=./.github/workflows/ci.tfvars
+
+      - name: 'Terraform apply'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+        run: |
+          terraform apply --auto-approve \
+            -var="aws_region=${{ env.AWS_REGION }}" \
+            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
+            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
+            -var-file=./.github/workflows/ci.tfvars
