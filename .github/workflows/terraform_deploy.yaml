@@ -112,3 +112,11 @@ jobs:
             -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
             -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
             -var-file=${{ env.TFVARS_FILE }}
+
+      - name: 'Collect TODO artifacts'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'TODOs'
+          path: |
+            ${{ github.workspace }}/TODO**
