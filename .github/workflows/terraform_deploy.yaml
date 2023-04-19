@@ -91,7 +91,7 @@ jobs:
       - name: 'Terraform init'
         run: |
           terraform init \
-            -backend-config=
+            -backend-config=${{env.BACKEND_CONFIG_FILE }}
 
       # plan
       # TODO : replace with https://github.com/marketplace/actions/terraform-plan
