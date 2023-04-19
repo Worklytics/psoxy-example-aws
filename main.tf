@@ -23,7 +23,13 @@ terraform {
   # local may be safe for production-use IFF you are executing Terraform from a secure location
   #
   # Please review and seek guidance from your Security team if in doubt.
-  backend "local" {
+#  backend "local" {
+#  }
+
+  # example remove backend (this S3 bucket must already be provisioned, and AWS role executing
+  # terraform must be able to read/write to it - and use encryption key, if any)
+  backend "gcs" {
+
   }
 
   # example remove backend (this S3 bucket must already be provisioned, and AWS role executing
