@@ -70,10 +70,13 @@ jobs:
       - name: 'Terraform init and apply'
         run: |
           terraform init
-          terraform plan -auto-approve \
+          terraform plan \
             -var="aws_region=${{ env.AWS_REGION }}" \
             -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
             -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
-            -var="enabled_connectors=[\"zoom\",\"hris\"]"
-            -var="environment_name=\"exmpl-aws\""
-
+            -var-file=./.github/workflows/ci.tfvars
+#          terraform apply --auto-approve \
+#            -var="aws_region=${{ env.AWS_REGION }}" \
+#            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
+#            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
+#            -var-file=./.github/workflows/ci.tfvars
