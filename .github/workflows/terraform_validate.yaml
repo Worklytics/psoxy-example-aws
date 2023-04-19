@@ -20,7 +20,7 @@ jobs:
 
       # TODO: change this for proper identity in worklytics-ci project
       GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/example-pool/providers/example-gh-provider
-      GCP_SERVICE_ACCOUNT: github-actions@psoxy-erik-dev.iam.gserviceaccount.com
+      GCP_SERVICE_ACCOUNT: github-actions@psoxy-dev-erik.iam.gserviceaccount.com
 
     steps:
       - name: Check out code
