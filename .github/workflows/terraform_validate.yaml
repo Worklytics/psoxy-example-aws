@@ -12,6 +12,11 @@ jobs:
     env:
       TERRAFORM_VERSION: 1.3.9
       BACKEND_CONFIG_FILE: ./.github/workflows/ci.tfbackend
+
+      # TODO: change this for proper identity in worklytics-ci project
+      GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/github-actions/providers/github
+      GCP_SERVICE_ACCOUNT: github-actions@psoxy-erik-dev.iam.gserviceaccount.com
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -25,3 +30,12 @@ jobs:
         run: |
           terraform init -reconfigure -backend-config=${{env.BACKEND_CONFIG_FILE }}
           terraform validate
+
+      - id: gcp-oidc
+        name: authenticate to GCP
+        uses: google-github-actions/auth@v0.3.1
+        if: ${{ env.GCP_PROJECT_ID != null }}
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
