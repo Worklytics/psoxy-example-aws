@@ -91,7 +91,6 @@ jobs:
       - name: 'Terraform init'
         run: |
           terraform init \
-            -config=access_token=
             -backend-config=${{env.BACKEND_CONFIG_FILE }}
 
       # plan
