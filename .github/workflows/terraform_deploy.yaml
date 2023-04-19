@@ -52,6 +52,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 'setup Terraform'
