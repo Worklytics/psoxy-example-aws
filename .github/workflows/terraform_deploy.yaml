@@ -24,7 +24,7 @@ jobs:
       JAVA_VERSION: 17
       TERRAFORM_VERSION: 1.3.9
 
-      BACKEND_CONFIG_FILE: ./.github/workflows/backend.tfvars
+      BACKEND_CONFIG_FILE: ./.github/workflows/ci.tfbackend
       TFVARS_FILE: ./.github/workflows/ci.tfvars
 
 
