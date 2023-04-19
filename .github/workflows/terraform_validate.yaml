@@ -36,14 +36,12 @@ jobs:
         uses: google-github-actions/auth@v1.1.0
         with:
           create_credentials_file: true
-          token_format: access_token
-          access_token_lifetime: 900s
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
       - name: 'Terraform - validate'
         run: |
-          terraform init -reconfigure -backend-config=${{env.BACKEND_CONFIG_FILE }}
+          terraform init -backend-config=${{env.BACKEND_CONFIG_FILE }}
           terraform validate
 
 
