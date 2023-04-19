@@ -14,7 +14,7 @@ jobs:
       BACKEND_CONFIG_FILE: ./.github/workflows/ci.tfbackend
 
       # TODO: change this for proper identity in worklytics-ci project
-      GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/github-actions/providers/github
+      GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/example-pool/providers/example-gh-provider
       GCP_SERVICE_ACCOUNT: github-actions@psoxy-erik-dev.iam.gserviceaccount.com
 
     steps:
@@ -31,8 +31,6 @@ jobs:
         uses: google-github-actions/auth@v1.1.0
         if: ${{ env.GCP_PROJECT_ID != null }}
         with:
-          token_format: access_token
-          access_token_lifetime: 900s
           create_credentials_file: true
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
