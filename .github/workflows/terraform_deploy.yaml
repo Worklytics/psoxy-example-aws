@@ -60,30 +60,14 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: Determine Terraform Providers
-        id: terraform_providers
-        run: |
-          terraform init -backend-config=${{env.BACKEND_CONFIG_FILE }} -var-file=${{ env.TFVARS_FILE }}
-          echo "AWS_PROVIDER_COUNT=$(terraform providers | grep "^├── provider\[registry.terraform.io/hashicorp/aws" | wc -l)" >> $GITHUB_OUTPUT
-          echo "GOOGLE_PROVIDER_COUNT=$(terraform providers | grep "^├── provider\[registry.terraform.io/hashicorp/google" | wc -l)" >> $GITHUB_OUTPUT
-          echo "AZUREAD_PROVIDER_COUNT=$(terraform providers | grep "^├── provider\[registry.terraform.io/hashicorp/azuread" | wc -l)" >> $GITHUB_OUTPUT
-
-      - name: Retrieve AWS config values
-        id: aws
-        if: ${{ steps.terraform_providers.outputs.AWS_PROVIDER_COUNT > 0 }}
-        run: |
-          echo "ACCOUNT_ID=$(echo "var.aws_account_id" | terraform console -backend-config=${{env.BACKEND_CONFIG_FILE }} -var-file=${{ env.TFVARS_FILE }} | tr -d '\"\'" >> $GITHUB_OUTPUT
-          echo "REGION=$(echo "var.aws_region" | terraform console -backend-config=${{env.BACKEND_CONFIG_FILE }} -var-file=${{ env.TFVARS_FILE }} | tr -d '\"\'" >> $GITHUB_OUTPUT
-
-
       # use https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
       - id: aws-oidc
         name: authenticate to AWS
         uses: aws-actions/configure-aws-credentials@v2
-        if: ${{ steps.aws.ACCOUNT_ID != null }}
+        if: ${{ env.AWS_ACCOUNT_ID != null }}
         with:
-          role-to-assume: arn:aws:iam::${{ steps.aws.REGION }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ steps.aws.REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_REGION }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - id: gcp-oidc
         name: authenticate to GCP
