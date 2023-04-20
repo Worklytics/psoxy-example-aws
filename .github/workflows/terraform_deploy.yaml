@@ -37,7 +37,6 @@ jobs:
 
 
       # NOTE: must have identity pool + service account in GCP, as described https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
-      GCP_PROJECT_ID: psoxy-dev-erik
       GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/example-pool/providers/example-gh-provider
       GCP_SERVICE_ACCOUNT: github-actions@psoxy-dev-erik.iam.gserviceaccount.com
 
@@ -72,7 +71,7 @@ jobs:
       - id: gcp-oidc
         name: authenticate to GCP
         uses: google-github-actions/auth@v1.1.0
-        if: ${{ env.GCP_PROJECT_ID != null }}
+        if: ${{ env.GCP_SERVICE_ACCOUNT != null }}
         with:
           create_credentials_file: true
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -86,12 +85,6 @@ jobs:
           allow-no-subscriptions: true
           client-id: ${{ env.AZURE_AD_OIDC_CLIENT_ID }}
           tenant-id: ${{ env.MSFT365_TENANT_ID }}
-
-
-      - name: 'Terraform init'
-        run: |
-          terraform init \
-            -backend-config=${{env.BACKEND_CONFIG_FILE }}
 
       # plan
       # see https://github.com/marketplace/actions/terraform-plan
