@@ -86,6 +86,11 @@ jobs:
           client-id: ${{ env.AZURE_AD_OIDC_CLIENT_ID }}
           tenant-id: ${{ env.MSFT365_TENANT_ID }}
 
+      # dflook actions should do this, but dont' seem to work well with our hackery in psoxy_base_dir
+      - name: 'terraform init'
+        run:
+          terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}
+
       # plan
       # see https://github.com/marketplace/actions/terraform-plan
       - name: 'Terraform plan'
