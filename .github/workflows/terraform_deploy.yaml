@@ -97,7 +97,7 @@ jobs:
             aws_region="${{ env.AWS_REGION }}"
             aws_account_id=${{ env.AWS_ACCOUNT_ID }}
             psoxy_base_dir="${{ github.workspace }}/.terraform/modules/psoxy/"
-          var-file: ${{ env.TFVARS_FILE }}
+          var_file: ${{ env.TFVARS_FILE }}
 
       # see https://github.com/marketplace/actions/terraform-apply
       - name: 'Terraform apply'
