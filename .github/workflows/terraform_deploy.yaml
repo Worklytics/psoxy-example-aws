@@ -92,31 +92,29 @@ jobs:
           terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}
 
       # plan
-      # see https://github.com/marketplace/actions/terraform-plan
+      # TODO: replace with  https://github.com/marketplace/actions/terraform-plan
+      # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
+      # there; so suggests somehow it's not seen after init??
       - name: 'Terraform plan'
         if: github.event_name != 'workflow_dispatch'
-        uses: dflook/terraform-plan@v1.29.1
-        with:
-          backend_config_file: ${{ env.BACKEND_CONFIG_FILE }}
-          variables: |
-            aws_region="${{ env.AWS_REGION }}"
-            aws_account_id=${{ env.AWS_ACCOUNT_ID }}
-            psoxy_base_dir="${{ github.workspace }}/.terraform/modules/psoxy/"
-          var_file: ${{ env.TFVARS_FILE }}
+        run: |
+          terraform plan \
+            -var="aws_region=${{ env.AWS_REGION }}" \
+            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
+            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
+            -var-file=${{ env.TFVARS_FILE }}
 
-      # see https://github.com/marketplace/actions/terraform-apply
+      # TODO : replace with https://github.com/marketplace/actions/terraform-apply
+      # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
+      # there; so suggests somehow it's not seen after init??
       - name: 'Terraform apply'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
-        uses: dflook/terraform-apply@v1.29.1
-        with:
-          auto_approve: true
-          backend_config_file: ${{ env.BACKEND_CONFIG_FILE }}
-          variables: |
-            aws_region="${{ env.AWS_REGION }}"
-            aws_account_id=${{ env.AWS_ACCOUNT_ID }}
-            psoxy_base_dir="${{ github.workspace }}/.terraform/modules/psoxy/"
-          var_file: ${{ env.TFVARS_FILE }}
-
+        run: |
+          terraform apply --auto-approve \
+           -var="aws_region=${{ env.AWS_REGION }}" \
+           -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
+           -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
+           -var-file=${{ env.TFVARS_FILE }}
 
       - name: 'Collect TODO artifacts'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
