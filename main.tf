@@ -57,13 +57,14 @@ provider "azuread" {
 
 module "psoxy" {
   # source = "../../modular-examples/aws"
-  source = "git::https://github.com/worklytics/psoxy//infra/modular-examples/aws?ref=v0.4.20"
+  source = "git::https://github.com/worklytics/psoxy//infra/modular-examples/aws-msft-365?ref=v0.4.20"
 
   aws_account_id                 = var.aws_account_id
   aws_assume_role_arn            = var.aws_assume_role_arn # role that can test the instances (lambdas)
   aws_region                     = var.aws_region
   aws_ssm_param_root_path        = var.aws_ssm_param_root_path
   psoxy_base_dir                 = var.psoxy_base_dir
+  install_test_tool              = var.install_test_tool
   force_bundle                   = var.force_bundle
   caller_gcp_service_account_ids = var.caller_gcp_service_account_ids
   caller_aws_arns                = var.caller_aws_arns
@@ -92,15 +93,15 @@ output "lookup_tables" {
 
 output "todos_1" {
   description = "List of todo steps to complete 1st, in markdown format."
-  value       = join("\n", module.psoxy.todos_1)
+  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_1) : null
 }
 
 output "todos_2" {
   description = "List of todo steps to complete 2nd, in markdown format."
-  value       = join("\n", module.psoxy.todos_2)
+  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_2) : null
 }
 
 output "todos_3" {
   description = "List of todo steps to complete 3rd, in markdown format."
-  value       = join("\n", module.psoxy.todos_3)
+  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_3) : null
 }
