@@ -45,10 +45,10 @@ jobs:
 
 
     steps:
-      - name: Check out code
+      - name: 'Check out code'
         uses: actions/checkout@v3
 
-      - name: Setup Java
+      - name: 'Setup Java'
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
@@ -61,7 +61,7 @@ jobs:
 
       # use https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
       - id: aws-oidc
-        name: authenticate to AWS
+        name: 'authenticate to AWS'
         uses: aws-actions/configure-aws-credentials@v2
         if: ${{ env.AWS_ACCOUNT_ID != null }}
         with:
@@ -69,7 +69,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - id: gcp-oidc
-        name: authenticate to GCP
+        name: 'authenticate to GCP'
         uses: google-github-actions/auth@v1.1.0
         if: ${{ env.GCP_SERVICE_ACCOUNT != null }}
         with:
@@ -95,7 +95,7 @@ jobs:
       # TODO: replace with  https://github.com/marketplace/actions/terraform-plan
       # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
       # there; so suggests somehow it's not seen after init??
-      - name: 'Terraform plan'
+      - name: 'terraform plan'
         if: github.event_name != 'workflow_dispatch'
         run: |
           terraform plan \
@@ -107,7 +107,7 @@ jobs:
       # TODO : replace with https://github.com/marketplace/actions/terraform-apply
       # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
       # there; so suggests somehow it's not seen after init??
-      - name: 'Terraform apply'
+      - name: 'terraform apply'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
         run: |
           terraform apply --auto-approve \
@@ -116,7 +116,7 @@ jobs:
            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
            -var-file=${{ env.TFVARS_FILE }}
 
-      - name: 'Collect TODO artifacts'
+      - name: 'collect TODO artifacts'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
         uses: actions/upload-artifact@v3
         with:
