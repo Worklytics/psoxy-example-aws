@@ -19,7 +19,12 @@ You'll need:
     is usually included on those platforms (check with `git --version`).
   - an AWS account and credentials, as described in [Psoxy's AWS - Getting Started docs](https://github.com/Worklytics/psoxy/blob/v0.4.18/docs/aws/getting-started.md)
   - the [prerequisites for Psoxy](https://github.com/Worklytics/psoxy/blob/v0.4.18/README.md#prerequisites)
-    itself, although this example will attempt to help you check those
+    itself, although this example will attempt to help you check those.
+    - NOTE: for this example, `gcloud` (Google Cloud CLI) and `az` (Azure CLI) must be installed and
+      authenticated, even if you do not intend to use Google Workspace / Microsoft 365 as data
+      sources. This is due to limitation that Terraform does not allow conditional inclusion of the
+      `google`/`azuread` providers as dependencies.
+
 
 ### Setup
 
