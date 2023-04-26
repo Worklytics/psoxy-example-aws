@@ -159,7 +159,8 @@ jobs:
            -var-file=${{ env.TFVARS_FILE }}
 
       - name: 'collect TODO artifacts'
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply'
+        # ! cancelled() here to try to run this despite apply failures
+        if: ! cancelled() && github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply'
         uses: actions/upload-artifact@v3
         with:
           name: 'TODOs'
