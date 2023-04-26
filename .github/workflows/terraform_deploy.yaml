@@ -1,20 +1,24 @@
 name: 'Terraform plan / apply'
 
+# ways to run this workflow manually (CLI):
+# plan - gh workflow run terraform_deploy.yaml -f mode=plan --ref=s147-github-action-deploy
+# apply - gh workflow run terraform_deploy.yaml -f mode=apply --ref=s147-github-action-deploy
+# unlock - gh workflow run terraform_deploy.yaml -f mode=unlock -f lock_id=123123 --ref=s147-github-action-deploy
+# destroy - gh workflow run terraform_deploy.yaml -f mode=destroy --ref=s147-github-action-deploy
 
 on:
   push: # run on all pushes
     branches:
       - '**'
-  workflow_dispatch:  # allows this workflow to be triggered manually ( `gh workflow run terraform_deploy.yaml -f apply=true -f lock=true --ref=s147-github-action-deploy` )
+  workflow_dispatch:  # allows this workflow to be triggered manually (see above)
     inputs:
-      apply:
+      mode:
         description: 'Whether to apply terraform configuration, not just plan'
         required: true
-        default: 'false'
-      lock:
-        description: 'Whether to lock the statefile before applying'
-        required: true
-        default: 'true'
+        default: 'plan'
+      lock_id:
+        description: 'The lock ID to remove, if mode==unlock'
+        required: false
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -100,7 +104,7 @@ jobs:
       # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
       # there; so suggests somehow it's not seen after init??
       - name: 'terraform plan'
-        if: github.event_name != 'workflow_dispatch'
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.mode == 'plan'
         run: |
           terraform plan \
             -var="aws_region=${{ env.AWS_REGION }}" \
@@ -112,16 +116,30 @@ jobs:
       # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
       # there; so suggests somehow it's not seen after init??
       - name: 'terraform apply'
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply'
         run: |
-          terraform apply --auto-approve -lock=${{github.event.inputs.lock}}\
+          terraform apply --auto-approve \
+           -var="aws_region=${{ env.AWS_REGION }}" \
+           -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
+           -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
+           -var-file=${{ env.TFVARS_FILE }}
+
+      - name: 'terraform unlock'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'unlock'
+        run: |
+          terraform force-unlock -force ${{github.event.inputs.lock_id}}
+
+      - name: 'terraform destroy'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'unlock'
+        run: |
+          terraform destroy --auto-approve -\
            -var="aws_region=${{ env.AWS_REGION }}" \
            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
            -var-file=${{ env.TFVARS_FILE }}
 
       - name: 'collect TODO artifacts'
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply'
         uses: actions/upload-artifact@v3
         with:
           name: 'TODOs'
