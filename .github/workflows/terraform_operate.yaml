@@ -25,8 +25,8 @@ permissions:
   contents: read    # This is required for actions/checkout
 
 jobs:
-  terraform_plan_apply:
-    name: 'terraform_plan_apply'
+  terraform_operate:
+    name: 'terraform operate (mode: ${{ github.event.inputs.mode }})'
     runs-on: ubuntu-latest
     env:
       JAVA_VERSION: 17
