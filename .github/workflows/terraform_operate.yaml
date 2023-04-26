@@ -121,10 +121,12 @@ jobs:
       # TODO: replace with  https://github.com/marketplace/actions/terraform-plan
       # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
       # there; so suggests somehow it's not seen after init??
+      # NOTE: lock=false to avoid holding lock while planning
       - name: 'terraform plan'
         if: github.event_name != 'workflow_dispatch' || github.event.inputs.mode == 'plan'
         run: |
           terraform plan \
+            -lock=false \
             -var="aws_region=${{ env.AWS_REGION }}" \
             -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
             -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
