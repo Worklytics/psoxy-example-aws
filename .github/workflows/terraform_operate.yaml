@@ -71,9 +71,6 @@ jobs:
       AZURE_AD_OIDC_CLIENT_ID: 1254bc3d-0e9f-4b98-b737-90f169829767
 
     steps:
-      - name: Output Inputs
-        run: echo "${{ toJSON(github.event.inputs) }}"
-
       - name: 'Check out code'
         uses: actions/checkout@v3
 
@@ -151,7 +148,7 @@ jobs:
           terraform force-unlock -force ${{github.event.inputs.lock_id}}
 
       - name: 'terraform destroy'
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'unlock'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'destroy'
         run: |
           terraform destroy --auto-approve -\
            -var="aws_region=${{ env.AWS_REGION }}" \
