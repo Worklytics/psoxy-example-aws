@@ -5,12 +5,16 @@ on:
   push: # run on all pushes
     branches:
       - '**'
-  workflow_dispatch:  # allows this workflow to be triggered manually ( `gh workflow run terraform_deploy.yaml -f apply=true --ref=s147-github-action-deploy` )
+  workflow_dispatch:  # allows this workflow to be triggered manually ( `gh workflow run terraform_deploy.yaml -f apply=true -f lock=true --ref=s147-github-action-deploy` )
     inputs:
       apply:
         description: 'Whether to apply terraform configuration, not just plan'
         required: true
         default: 'false'
+      lock:
+        description: 'Whether to lock the statefile before applying'
+        required: true
+        default: 'true'
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -110,7 +114,7 @@ jobs:
       - name: 'terraform apply'
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
         run: |
-          terraform apply --auto-approve \
+          terraform apply --auto-approve -lock=${{github.event.inputs.lock}}\
            -var="aws_region=${{ env.AWS_REGION }}" \
            -var="aws_account_id=${{ env.AWS_ACCOUNT_ID }}" \
            -var="psoxy_base_dir=${{ github.workspace }}/.terraform/modules/psoxy/" \
