@@ -35,6 +35,8 @@ jobs:
       BACKEND_CONFIG_FILE: ./.github/workflows/ci.tfbackend
       TFVARS_FILE: ./.github/workflows/ci.tfvars
 
+      PATH_TO_DEPLOYMENT_JAR: "${{ github.workspace }}/.terraform/modules/psoxy/java/impl/aws/target/psoxy-aws-v0.4.20.jar"
+
       # NOTE: vars context here is in beta;
       #   see https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows
       # if you wish, revert to using your own
@@ -117,6 +119,12 @@ jobs:
         run:
           terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}
 
+      - name: 'download prior bundle'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'deployment_bundle'
+          path: ${{ env.PATH_TO_DEPLOYMENT_JAR }}
+
       # plan
       # TODO: replace with  https://github.com/marketplace/actions/terraform-plan
       # atm, this action doesn't seem to like our value for psoxy_base_dir, complaining no java/pom.xml
@@ -165,3 +173,9 @@ jobs:
           name: 'TODOs'
           path: |
             ${{ github.workspace }}/TODO**
+
+      - name: 'cache built JAR'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'deployment_bundle'
+          path: ${{ env.PATH_TO_DEPLOYMENT_JAR }}
