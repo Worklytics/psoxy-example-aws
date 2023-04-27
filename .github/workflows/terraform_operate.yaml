@@ -121,6 +121,7 @@ jobs:
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3
+        continue-on-error: true # don't die if no prior bundle
         with:
           name: 'deployment_bundle'
           path: ${{ env.PATH_TO_DEPLOYMENT_JAR }}
