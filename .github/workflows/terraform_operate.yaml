@@ -114,7 +114,7 @@ jobs:
           client-id: ${{ env.AZURE_AD_OIDC_CLIENT_ID }}
           tenant-id: ${{ env.MSFT365_TENANT_ID }}
 
-      # dflook actions should do this, but dont' seem to work well with our hackery in psoxy_base_dir
+      # dflook actions should do this, but don't seem to work well with our hackery in psoxy_base_dir
       - name: 'terraform init'
         run:
           terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}

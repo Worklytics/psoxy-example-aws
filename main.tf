@@ -28,12 +28,6 @@ terraform {
 
   # example remove backend (this S3 bucket must already be provisioned, and AWS role executing
   # terraform must be able to read/write to it - and use encryption key, if any)
-  backend "gcs" {
-
-  }
-
-  # example remove backend (this S3 bucket must already be provisioned, and AWS role executing
-  # terraform must be able to read/write to it - and use encryption key, if any)
   #  backend "s3" {
   #    bucket = "terraform_state_bucket" # fill with S3 bucket where you want the statefile to be
   #    key    = "prod_state" # fill with path where you want state file to be stored
@@ -64,7 +58,6 @@ provider "azuread" {
 module "psoxy" {
   # source = "../../modular-examples/aws"
   source = "git::https://github.com/worklytics/psoxy//infra/modular-examples/aws?ref=v0.4.20"
-
 
   aws_account_id                 = var.aws_account_id
   aws_assume_role_arn            = var.aws_assume_role_arn # role that can test the instances (lambdas)
