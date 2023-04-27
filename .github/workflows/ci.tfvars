@@ -1,8 +1,8 @@
-environment_name= "ex-aws-ci"
+#environment_name= "ex-aws-ci"
 enabled_connectors = [
   "azure-ad",
   "gdirectory",
-  "hris",
+#  "hris",
   "outlook-cal",
-  "zoom",
+#  "zoom",
 ]
