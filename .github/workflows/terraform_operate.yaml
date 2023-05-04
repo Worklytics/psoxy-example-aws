@@ -86,10 +86,6 @@ jobs:
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
           id_token_include_email: true
-          access_token_scopes:
-            https://www.googleapis.com/auth/cloud-platform
-            https://www.googleapis.com/auth/userinfo.email
-
       - id: azure-oidc
         name: 'authenticate to Azure'
         uses: azure/login@v1
@@ -103,6 +99,10 @@ jobs:
       - name: 'terraform init'
         run:
           terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}
+
+      - name: 'terraform gcloud identity'
+        run:
+          echo 'data.google_client_openid_userinfo.me' | terraform console
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3
