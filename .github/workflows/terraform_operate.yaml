@@ -103,12 +103,13 @@ jobs:
           tenant-id: ${{ env.MSFT365_TENANT_ID }}
 
       # dflook actions should do this, but don't seem to work well with our hackery in psoxy_base_dir
+      # NOTE: -backend-config values below are coupled to s3 backend case; if change that, change these
       - name: 'terraform init'
         run:
           terraform init \
             -backend-config="bucket=${{ env.TF_STATE_BUCKET}} \
-            -backend-config="key=${{ env.TF_STATE_KEY }}" |
-            -backend-config="region=${{ env.AWS_REGION }}" |
+            -backend-config="key=${{ env.TF_STATE_KEY }}" \
+            -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3
