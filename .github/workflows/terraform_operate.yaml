@@ -102,9 +102,12 @@ jobs:
         run:
           terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}
 
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
       - name: 'terraform gcloud identity'
         run: |
-          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+          gcloud info
           gcloud auth list
 
       - name: 'download prior bundle'
