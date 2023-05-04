@@ -103,7 +103,8 @@ jobs:
           terraform init -backend-config=${{ env.BACKEND_CONFIG_FILE }}
 
       - name: 'terraform gcloud identity'
-        run:
+        run: |
+          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
           gcloud auth list
 
       - name: 'download prior bundle'
