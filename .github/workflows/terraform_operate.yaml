@@ -88,6 +88,7 @@ jobs:
           #token_format: id_token
           #id_token_include_email: true
           #id_token_audience: ${{ env.GCP_SERVICE_ACCOUNT }}
+
       - id: azure-oidc
         name: 'authenticate to Azure'
         uses: azure/login@v1
@@ -107,7 +108,8 @@ jobs:
 
       - name: 'terraform gcloud identity'
         run: |
-          gcloud info
+          gcloud auth list
+          gcloud auth login --brief --cred-file="${{ steps.gcp-oidc.outputs.credentials_file_path }}"
           gcloud auth list
 
       - name: 'download prior bundle'
