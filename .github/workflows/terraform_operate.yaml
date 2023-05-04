@@ -165,7 +165,7 @@ jobs:
         with:
           name: 'deployment_bundle'
           path:
-             ${{ $(terraform output -raw path_to_deployment_jar )}}
+             ${terraform output -raw path_to_deployment_jar}
 
       - name: 'cat build log'
         run:
