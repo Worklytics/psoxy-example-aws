@@ -23,6 +23,8 @@ jobs:
       # have sufficient perms, per https://github.com/Worklytics/psoxy/blob/main/docs/aws/getting-started.md#prerequisites
       # and you must have added GitHub as an OIDC provider in the AWS Account
       AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      AWS_ROLE_TO_ASSUME: ${{ vars.AWS_ROLE_TO_ASSUME }}
 
     steps:
       - name: Check out code
@@ -37,7 +39,6 @@ jobs:
       - id: aws-oidc
         name: 'authenticate to AWS'
         uses: aws-actions/configure-aws-credentials@v2
-        if: ${{ env.AWS_ACCOUNT_ID != null }}
         with:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
