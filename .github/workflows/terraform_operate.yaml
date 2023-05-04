@@ -85,6 +85,7 @@ jobs:
           create_credentials_file: true
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+          token_format: id_token
           id_token_include_email: true
       - id: azure-oidc
         name: 'authenticate to Azure'
