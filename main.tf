@@ -26,6 +26,10 @@ terraform {
 #  backend "local" {
 #  }
 
+  backend "gcs" {
+
+  }
+
   # example remove backend (this S3 bucket must already be provisioned, and AWS role executing
   # terraform must be able to read/write to it - and use encryption key, if any)
   #  backend "s3" {
