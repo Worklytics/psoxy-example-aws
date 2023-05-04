@@ -26,7 +26,7 @@ terraform {
 #  backend "local" {
 #  }
 
-  backend "gcs" {
+  backend "s3" {
 
   }
 
