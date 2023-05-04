@@ -40,8 +40,7 @@ jobs:
 
       # NOTE: vars context here is in beta;
       #   see https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows
-      # if you wish, revert to using your own
-
+      # if you wish, revert to using your own hard coded values in this file (values NOT sensitive)
 
       # NOTE: this role must be configured with trust policy, per https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
       # have sufficient perms, per https://github.com/Worklytics/psoxy/blob/main/docs/aws/getting-started.md#prerequisites
@@ -50,28 +49,12 @@ jobs:
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
       AWS_ROLE_TO_ASSUME: ${{ vars.AWS_ROLE_TO_ASSUME }}
 
-
       # NOTE: must have identity pool + service account in GCP, as described https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
       GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       MSFT365_TENANT_ID: ${{ vars.MSFT365_TENANT_ID }}
       AZURE_AD_OIDC_CLIENT_ID: ${{ vars.AZURE_AD_OIDC_CLIENT_ID }}
-
-#      # NOTE: this role must be configured with trust policy, per https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
-#      # have sufficient perms, per https://github.com/Worklytics/psoxy/blob/main/docs/aws/getting-started.md#prerequisites
-#      # and you must have added GitHub as an OIDC provider in the AWS Account
-#      AWS_REGION: us-east-1
-#      AWS_ACCOUNT_ID: 874171213677
-#      AWS_ROLE_TO_ASSUME: github-actions
-
-
-#      # NOTE: must have identity pool + service account in GCP, as described https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
-#      GCP_WORKLOAD_IDENTITY_PROVIDER: projects/1012889821883/locations/global/workloadIdentityPools/example-pool/providers/example-gh-provider
-#      GCP_SERVICE_ACCOUNT: github-actions@psoxy-dev-erik.iam.gserviceaccount.com
-
-#      MSFT365_TENANT_ID: 6e4c8e9f-76cf-41d1-806e-61838b880b87
-#      AZURE_AD_OIDC_CLIENT_ID: b677dfb0-8e8a-4194-9ccc-27889a038892
 
     steps:
       - name: 'Check out code'
