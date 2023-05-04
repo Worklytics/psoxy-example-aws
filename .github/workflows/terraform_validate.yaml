@@ -44,7 +44,7 @@ jobs:
 
       - name: 'Terraform - validate'
         run: |
-          terraform init |
+          terraform init \
             -backend-config="bucket=${{ env.TF_STATE_BUCKET}}" \
             -backend-config="key=${{ env.TF_STATE_KEY }}" \
             -backend-config="region=${{ env.AWS_REGION }}"
