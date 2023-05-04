@@ -85,6 +85,7 @@ jobs:
           create_credentials_file: true
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+          id_token_include_email: true
           access_token_scopes:
             https://www.googleapis.com/auth/cloud-platform
             https://www.googleapis.com/auth/userinfo.email
