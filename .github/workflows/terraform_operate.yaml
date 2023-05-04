@@ -35,9 +35,6 @@ jobs:
       BACKEND_CONFIG_FILE: ./.github/workflows/ci.tfbackend
       TFVARS_FILE: ./.github/workflows/ci.tfvars
 
-      # TODO: fix this, take it from `terraform output`
-      PATH_TO_DEPLOYMENT_JAR: "${{ github.workspace }}/.terraform/modules/psoxy/java/impl/aws/target/psoxy-aws-v0.4.21.jar"
-
       # NOTE: vars context here is in beta;
       #   see https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows
       # if you wish, revert to using your own hard coded values in this file (values NOT sensitive)
@@ -166,6 +163,10 @@ jobs:
           name: 'deployment_bundle'
           path:
              ${terraform output -raw path_to_deployment_jar}
+
+      - name: 'inventory working directory'
+        run:
+          ls -al
 
       - name: 'cat build log'
         run:
