@@ -82,11 +82,12 @@ jobs:
         uses: google-github-actions/auth@v1.1.0
         if: ${{ env.GCP_SERVICE_ACCOUNT != null }}
         with:
-          create_credentials_file: true
+          create_credentials_file: true # this should fill GOOGLE_APPLICATION_CREDENTIALS env var with path to file
           workload_identity_provider: ${{env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
-          token_format: id_token
-          id_token_include_email: true
+          #token_format: id_token
+          #id_token_include_email: true
+          #id_token_audience: ${{ env.GCP_SERVICE_ACCOUNT }}
       - id: azure-oidc
         name: 'authenticate to Azure'
         uses: azure/login@v1
@@ -103,7 +104,7 @@ jobs:
 
       - name: 'terraform gcloud identity'
         run:
-          gcloud config get-value account
+          gcloud auth list
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3
