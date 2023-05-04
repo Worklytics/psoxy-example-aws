@@ -102,7 +102,7 @@ jobs:
 
       - name: 'terraform gcloud identity'
         run:
-          echo 'data.google_client_openid_userinfo.me' | terraform console
+          gcloud config get-value account
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3

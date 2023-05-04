@@ -105,7 +105,3 @@ output "todos_3" {
   description = "List of todo steps to complete 3rd, in markdown format."
   value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_3) : null
 }
-
-data "google_client_openid_userinfo" "me" {
-
-}
