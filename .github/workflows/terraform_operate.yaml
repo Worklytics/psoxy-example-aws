@@ -55,8 +55,6 @@ jobs:
       MSFT365_TENANT_ID: ${{ vars.MSFT365_TENANT_ID }}
       AZURE_AD_OIDC_CLIENT_ID: ${{ vars.AZURE_AD_OIDC_CLIENT_ID }}
 
-
-
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v3
@@ -106,7 +104,8 @@ jobs:
       # NOTE: -backend-config values below are coupled to s3 backend case; if change that, change these
       - name: 'terraform init'
         run:
-          terraform init -backend-config="bucket=${{ env.TF_STATE_BUCKET}},key=${{ env.TF_STATE_KEY }},region=${{ env.AWS_REGION }}"
+          terraform init \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET}},key=${{ env.TF_STATE_KEY }},region=${{ env.AWS_REGION }}"
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3
