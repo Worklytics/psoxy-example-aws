@@ -37,6 +37,7 @@ jobs:
       # NOTE: vars context here is in beta;
       #   see https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows
       # if you wish, revert to using your own hard coded values in this file (values NOT sensitive)
+      # which tbh, may make more sense, as gets it under version control, keeps it in one place
 
       TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
       TF_STATE_KEY: psoxy
@@ -105,7 +106,7 @@ jobs:
       - name: 'terraform init'
         run:
           terraform init \
-            -backend-config="bucket=${{ env.TF_STATE_BUCKET}},key=${{ env.TF_STATE_KEY }},region=${{ env.AWS_REGION }}"
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET}} key=${{ env.TF_STATE_KEY }} region=${{ env.AWS_REGION }}"
 
       - name: 'download prior bundle'
         uses: actions/download-artifact@v3
