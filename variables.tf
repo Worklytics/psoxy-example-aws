@@ -1,7 +1,16 @@
 variable "environment_name" {
   type        = string
-  description = "qualifier to distinguish resources created by this terraform configuration from other psoxy Terraform deployments, (eg, 'prod', 'dev', etc)"
-  default     = ""
+  description = "friendly qualifier to distinguish resources created by this terraform configuration other Terraform deployments, (eg, 'prod', 'dev', etc)"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_ ]*[a-zA-Z0-9]$", var.environment_name))
+    error_message = "The `environment_name` must start with a letter, can contain alphanumeric characters, hyphens, underscores, and spaces, and must end with a letter or number."
+  }
+
+  validation {
+    condition     = !can(regex("^(?i)(aws|ssm)", var.environment_name))
+    error_message = "The `environment_name` cannot start with 'aws' or 'ssm', as this will name your AWS resources with prefixes that displease the AMZN overlords."
+  }
 }
 
 variable "aws_account_id" {
@@ -57,46 +66,37 @@ variable "caller_aws_arns" {
 
   validation {
     condition = alltrue([
-      for i in var.caller_aws_arns : (length(regexall("^arn:aws:iam::\\d{12}:\\w+$", i)) > 0)
+      for i in var.caller_aws_arns : (length(regexall("^arn:aws:iam::\\d{12}:((role|user)\\/)?\\w+$", i)) > 0)
     ])
-    error_message = "The values of caller_aws_arns should be AWS Resource Names, something like 'arn:aws:iam::914358739851:root'."
+    error_message = "The values of caller_aws_arns should be AWS Resource Names, something like 'arn:aws:iam::123123123123:root'."
   }
 }
 
-variable "msft_tenant_id" {
-  type        = string
-  description = "ID of Microsoft tenant to connect to (req'd only if config includes MSFT connectors)"
-  default     = ""
-}
 
-variable "msft_owners_email" {
-  type        = set(string)
-  description = "(Only if config includes MSFT connectors). Optionally, set of emails to apply as owners on AAD apps apart from current logged user"
-  default     = []
-}
 
-variable "gcp_project_id" {
-  type        = string
-  description = "string ID of GCP project that will host psoxy instance; must exist. Can leave null if not using GCP/Google Workspace."
-  default     = null
-}
-
-variable "google_workspace_example_user" {
-  type        = string
-  description = "user to impersonate for Google Workspace API calls (null for none)"
-  default     = null
-}
-
-variable "google_workspace_example_admin" {
-  type        = string
-  description = "user to impersonate for Google Workspace API calls (null for value of `google_workspace_example_user`)"
-  default     = null # will failover to user
-}
 
 variable "salesforce_domain" {
   type        = string
-  default     = ""
   description = "Domain of the Salesforce to connect to (only required if using Salesforce connector). To find your My Domain URL, from Setup, in the Quick Find box, enter My Domain, and then select My Domain"
+  default     = ""
+}
+
+variable "jira_server_url" {
+  type        = string
+  default     = null
+  description = "(Only required if using Jira Server connector) URL of the Jira server (ex: myjiraserver.mycompany.com)"
+}
+
+variable "jira_cloud_id" {
+  type        = string
+  default     = null
+  description = "(Only required if using Jira Cloud connector) Cloud id of the Jira Cloud to connect to (ex: 1324a887-45db-1bf4-1e99-ef0ff456d421)."
+}
+
+variable "example_jira_issue_id" {
+  type        = string
+  default     = null
+  description = "(Only required if using Jira Server/Cloud connector) Id of an issue for only to be used as part of example calls for Jira (ex: ETV-12)"
 }
 
 variable "connector_display_name_suffix" {
@@ -118,6 +118,12 @@ variable "psoxy_base_dir" {
 variable "force_bundle" {
   type        = bool
   description = "whether to force build of deployment bundle, even if it already exists for this proxy version"
+  default     = false
+}
+
+variable "provision_testing_infra" {
+  type        = bool
+  description = "whether to provision infra needed to support testing of deployment"
   default     = false
 }
 
@@ -162,7 +168,7 @@ variable "bulk_sanitized_expiration_days" {
   default     = 1805 # 5 years; intent is 'forever', but some upperbound in case bucket is forgotten
 }
 
-variable "custom_rest_rules" {
+variable "custom_api_connector_rules" {
   type        = map(string)
   description = "map of connector id --> YAML file with custom rules"
   default     = {}
@@ -243,5 +249,3 @@ variable "todos_as_outputs" {
   description = "whether to render TODOs as outputs or flat files (former useful if you're using Terraform Cloud/Enterprise, or somewhere else where the filesystem is not readily accessible to you)"
   default     = false
 }
-
-
