@@ -5,16 +5,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.12"
     }
-
-    # for API connections to Microsoft 365 (comment this out if unused)
-    azuread = {
-      version = "~> 2.3"
-    }
-
-    # for the API connections to Google Workspace
-    google = {
-      version = ">= 3.74, <= 5.0"
-    }
   }
 
   # we recommend you use a secure location for your Terraform state (such as S3 bucket), as it
@@ -35,6 +25,44 @@ terraform {
   #  }
 }
 
+
+## Data Sources configuration
+## (eg, sources you want to connect to Worklytics)
+
+# general cases
+module "worklytics_connectors" {
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.25"
+
+  enabled_connectors    = var.enabled_connectors
+  example_jira_issue_id = var.example_jira_issue_id
+  jira_cloud_id         = var.jira_cloud_id
+  jira_server_url       = var.jira_server_url
+  salesforce_domain     = var.salesforce_domain
+}
+
+# sources which require additional dependencies are split into distinct Terraform files, following
+# the naming convention of `{source-identifier}.tf`, eg `msft-365.tf`
+# lines below merge results of those files back into single maps of sources
+
+locals {
+  api_connectors = merge(
+    module.worklytics_connectors.enabled_api_connectors,
+    module.worklytics_connectors_google_workspace.enabled_api_connectors,
+    local.msft_api_connectors_with_auth
+  )
+}
+
+
+locals {
+  bulk_connectors = merge(
+    module.worklytics_connectors.enabled_bulk_connectors,
+    var.custom_bulk_connectors,
+  )
+}
+
+
+## Host platform (AWS) configuration
+
 # NOTE: you need to provide credentials. usual way to do this is to set env vars:
 #        AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 # see https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication for more
@@ -51,44 +79,66 @@ provider "aws" {
   ]
 }
 
-provider "azuread" {
-  tenant_id = var.msft_tenant_id
+locals {
+  host_platform_id = "AWS"
 }
 
 module "psoxy" {
-  # source = "../../modular-examples/aws"
-  source = "git::https://github.com/worklytics/psoxy//infra/modular-examples/aws?ref=v0.4.21"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.25"
 
+  environment_name               = var.environment_name
   aws_account_id                 = var.aws_account_id
-  aws_assume_role_arn            = var.aws_assume_role_arn # role that can test the instances (lambdas)
-  aws_region                     = var.aws_region
   aws_ssm_param_root_path        = var.aws_ssm_param_root_path
   psoxy_base_dir                 = var.psoxy_base_dir
+  deployment_bundle              = var.deployment_bundle
   install_test_tool              = var.install_test_tool
+  provision_testing_infra        = var.provision_testing_infra
   force_bundle                   = var.force_bundle
   caller_gcp_service_account_ids = var.caller_gcp_service_account_ids
   caller_aws_arns                = var.caller_aws_arns
-  enabled_connectors             = var.enabled_connectors
   non_production_connectors      = var.non_production_connectors
-  connector_display_name_suffix  = var.connector_display_name_suffix
-  custom_bulk_connectors         = var.custom_bulk_connectors
-  custom_rest_rules              = var.custom_rest_rules
+  custom_api_connector_rules     = var.custom_api_connector_rules
   lookup_table_builders          = var.lookup_table_builders
-  msft_tenant_id                 = var.msft_tenant_id
-  msft_owners_email              = var.msft_owners_email
   general_environment_variables  = var.general_environment_variables
-  salesforce_domain              = var.salesforce_domain
-  gcp_project_id                 = var.gcp_project_id
-  google_workspace_example_admin = var.google_workspace_example_admin
-  google_workspace_example_user  = var.google_workspace_example_user
-  environment_name               = var.environment_name
   bulk_sanitized_expiration_days = var.bulk_sanitized_expiration_days
   bulk_input_expiration_days     = var.bulk_input_expiration_days
+  api_connectors                 = local.api_connectors
+  bulk_connectors                = local.bulk_connectors
+  custom_bulk_connector_rules    = var.custom_bulk_connector_rules
+  todo_step                      = max(module.worklytics_connectors.next_todo_step, module.worklytics_connectors_google_workspace.next_todo_step, module.worklytics_connectors_msft_365.next_todo_step)
 }
 
-# if you generated these, you may want them to import back into your data warehouse
-output "lookup_tables" {
-  value = module.psoxy.lookup_tables
+## Worklytics connection configuration
+#  as of June 2023, this just outputs TODO files, but would provision connections via future
+#  Worklytics API / Terraform provider
+
+locals {
+  all_connectors = merge(local.api_connectors, local.bulk_connectors)
+  all_instances  = merge(module.psoxy.bulk_connector_instances, module.psoxy.api_connector_instances)
+}
+
+module "connection_in_worklytics" {
+  for_each = local.all_instances
+
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-generic?ref=v0.4.25"
+
+  psoxy_host_platform_id = local.host_platform_id
+  psoxy_instance_id      = each.key
+  worklytics_host        = var.worklytics_host
+  connector_id           = try(local.all_connectors[each.key].worklytics_connector_id, "")
+  display_name           = try(local.all_connectors[each.key].worklytics_connector_name, "${local.all_connectors[each.key].display_name} via Psoxy")
+  todo_step              = module.psoxy.next_todo_step
+
+  settings_to_provide = merge(
+    # Source API case
+    try({
+      "Psoxy Base URL" = each.value.endpoint_url
+    }, {}),
+    # Source Bucket (file) case
+    try({
+      "Bucket Name" = each.value.sanitized_bucket_name
+    }, {}),
+  try(each.value.settings_to_provide, {}))
 }
 
 output "path_to_deployment_jar" {
@@ -98,15 +148,15 @@ output "path_to_deployment_jar" {
 
 output "todos_1" {
   description = "List of todo steps to complete 1st, in markdown format."
-  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_1) : null
+  value       = var.todos_as_outputs ? join("\n", local.source_authorization_todos) : null
 }
 
 output "todos_2" {
   description = "List of todo steps to complete 2nd, in markdown format."
-  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_2) : null
+  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos) : null
 }
 
 output "todos_3" {
   description = "List of todo steps to complete 3rd, in markdown format."
-  value       = var.todos_as_outputs ? join("\n", module.psoxy.todos_3) : null
+  value       = var.todos_as_outputs ? join("\n", values(module.connection_in_worklytics)[*].todo) : null
 }
