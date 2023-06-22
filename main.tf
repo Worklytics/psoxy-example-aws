@@ -31,8 +31,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "../../modules/worklytics-connectors"
-  # source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.25"
 
   enabled_connectors    = var.enabled_connectors
   example_jira_issue_id = var.example_jira_issue_id
@@ -85,13 +84,13 @@ locals {
 }
 
 module "psoxy" {
-  source = "../../modules/aws-host"
-  # source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.25"
 
   environment_name               = var.environment_name
   aws_account_id                 = var.aws_account_id
   aws_ssm_param_root_path        = var.aws_ssm_param_root_path
   psoxy_base_dir                 = var.psoxy_base_dir
+  deployment_bundle              = var.deployment_bundle
   install_test_tool              = var.install_test_tool
   provision_testing_infra        = var.provision_testing_infra
   force_bundle                   = var.force_bundle
@@ -105,6 +104,7 @@ module "psoxy" {
   bulk_input_expiration_days     = var.bulk_input_expiration_days
   api_connectors                 = local.api_connectors
   bulk_connectors                = local.bulk_connectors
+  custom_bulk_connector_rules    = var.custom_bulk_connector_rules
   todo_step                      = max(module.worklytics_connectors.next_todo_step, module.worklytics_connectors_google_workspace.next_todo_step, module.worklytics_connectors_msft_365.next_todo_step)
 }
 
@@ -120,11 +120,11 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "../../modules/worklytics-psoxy-connection-generic"
-  # source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-generic?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-generic?ref=v0.4.25"
 
   psoxy_host_platform_id = local.host_platform_id
   psoxy_instance_id      = each.key
+  worklytics_host        = var.worklytics_host
   connector_id           = try(local.all_connectors[each.key].worklytics_connector_id, "")
   display_name           = try(local.all_connectors[each.key].worklytics_connector_name, "${local.all_connectors[each.key].display_name} via Psoxy")
   todo_step              = module.psoxy.next_todo_step

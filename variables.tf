@@ -46,6 +46,12 @@ variable "aws_ssm_param_root_path" {
   }
 }
 
+variable "worklytics_host" {
+  type        = string
+  description = "host of worklytics instance where tenant resides. (e.g. intl.worklytics.co for prod; but may differ for dev/staging)"
+  default     = "intl.worklytics.co"
+}
+
 variable "caller_gcp_service_account_ids" {
   type        = list(string)
   description = "ids of GCP service accounts allowed to send requests to the proxy (eg, unique ID of the SA of your Worklytics instance)"
@@ -71,9 +77,6 @@ variable "caller_aws_arns" {
     error_message = "The values of caller_aws_arns should be AWS Resource Names, something like 'arn:aws:iam::123123123123:root'."
   }
 }
-
-
-
 
 variable "salesforce_domain" {
   type        = string
@@ -112,6 +115,17 @@ variable "psoxy_base_dir" {
   validation {
     condition     = can(regex(".*\\/$", var.psoxy_base_dir))
     error_message = "The psoxy_base_dir value should end with a slash."
+  }
+}
+
+variable "deployment_bundle" {
+  type        = string
+  description = "path to deployment bundle to use (if not provided, will build one)"
+  default     = null
+
+  validation {
+    condition     = var.deployment_bundle == null || var.deployment_bundle != ""
+    error_message = "`deployment_bundle`, if non-null, must be non-empty string."
   }
 }
 
@@ -201,6 +215,20 @@ variable "custom_bulk_connectors" {
     #      }
     #    }
   }
+}
+
+variable "custom_bulk_connector_rules" {
+  type = map(object({
+    pseudonymFormat       = optional(string, "URL_SAFE_TOKEN")
+    columnsToRedact       = optional(list(string))
+    columnsToInclude      = optional(list(string))
+    columnsToPseudonymize = optional(list(string))
+    columnsToDuplicate    = optional(map(string))
+    columnsToRename       = optional(map(string))
+  }))
+
+  description = "map of connector id --> rules object"
+  default     = {}
 }
 
 # TODO: rethink this schema before we publish this
