@@ -1,7 +1,7 @@
 # BEGIN MSFT
 
 module "worklytics_connectors_msft_365" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.4.26"
 
 
   enabled_connectors     = var.enabled_connectors
@@ -17,12 +17,6 @@ provider "azuread" {
 }
 
 locals {
-  source_authorization_todos = concat(
-    module.worklytics_connectors.todos,
-    module.worklytics_connectors_google_workspace.todos,
-    module.worklytics_connectors_msft_365.todos
-  )
-
   env_qualifier           = coalesce(var.environment_name, "psoxy")
   msft_365_enabled        = length(module.worklytics_connectors_msft_365.enabled_api_connectors) > 0
   developer_provider_name = "${local.env_qualifier}-azure-access"
@@ -45,7 +39,7 @@ data "aws_region" "current" {
 module "cognito_identity_pool" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.4.26"
 
   developer_provider_name = local.developer_provider_name
   name                    = "${local.env_qualifier}-azure-ad-federation"
@@ -54,7 +48,7 @@ module "cognito_identity_pool" {
 module "cognito_identity" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-identity-cli?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-identity-cli?ref=v0.4.26"
 
   aws_region       = data.aws_region.current.id
   aws_role         = var.aws_assume_role_arn
@@ -75,7 +69,7 @@ resource "aws_iam_role_policy_attachment" "cognito_lambda_policy" {
 module "msft_connection_auth_federation" {
   for_each = module.worklytics_connectors_msft_365.enabled_api_connectors
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/azuread-federated-credentials?ref=v0.4.25"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/azuread-federated-credentials?ref=v0.4.26"
 
   application_object_id = each.value.connector.id
   display_name          = "${local.env_qualifier}AccessFromAWS"
