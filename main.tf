@@ -144,6 +144,7 @@ module "connection_in_worklytics" {
 
   source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-generic?ref=v0.4.34"
 
+
   psoxy_host_platform_id = local.host_platform_id
   psoxy_instance_id      = each.key
   worklytics_host        = var.worklytics_host
