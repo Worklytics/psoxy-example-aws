@@ -31,7 +31,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.34"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.36"
 
   enabled_connectors            = var.enabled_connectors
   jira_cloud_id                 = var.jira_cloud_id
@@ -102,7 +102,7 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.34"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.36"
 
   environment_name                = var.environment_name
   aws_account_id                  = var.aws_account_id
@@ -142,26 +142,20 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-generic?ref=v0.4.34"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.4.36"
 
+  psoxy_instance_id  = each.key
+  worklytics_host    = var.worklytics_host
+  aws_region         = var.aws_region
+  aws_role_arn       = module.psoxy.caller_role_arn
+  psoxy_endpoint_url = try(each.value.endpoint_url, null)
+  bucket_name        = try(each.value.sanitized_bucket_name, null)
+  connector_id       = try(local.all_connectors[each.key].worklytics_connector_id, "")
+  display_name       = try(local.all_connectors[each.key].worklytics_connector_name, "${local.all_connectors[each.key].display_name} via Psoxy")
+  todo_step          = module.psoxy.next_todo_step
 
-  psoxy_host_platform_id = local.host_platform_id
-  psoxy_instance_id      = each.key
-  worklytics_host        = var.worklytics_host
-  connector_id           = try(local.all_connectors[each.key].worklytics_connector_id, "")
-  display_name           = try(local.all_connectors[each.key].worklytics_connector_name, "${local.all_connectors[each.key].display_name} via Psoxy")
-  todo_step              = module.psoxy.next_todo_step
+  connector_settings_to_provide = try(each.value.settings_to_provide, {})
 
-  settings_to_provide = merge(
-    # Source API case
-    try({
-      "Psoxy Base URL" = each.value.endpoint_url
-    }, {}),
-    # Source Bucket (file) case
-    try({
-      "Bucket Name" = each.value.sanitized_bucket_name
-    }, {}),
-  try(each.value.settings_to_provide, {}))
 }
 
 output "path_to_deployment_jar" {
@@ -183,3 +177,12 @@ output "todos_3" {
   description = "List of todo steps to complete 3rd, in markdown format."
   value       = var.todos_as_outputs ? join("\n", values(module.connection_in_worklytics)[*].todo) : null
 }
+
+# although should be sensitive such that Terraform won't echo it to command line or expose it, leave
+# commented out in example until needed
+# if you uncomment it, you will then be able to obtain the value through `terraform output --raw pseudonym_salt`
+#output "pseudonym_salt" {
+#  description = "Value used to salt pseudonyms (SHA-256) hashes. If migrate to new deployment, you should copy this value."
+#  value       = module.psoxy.pseudonym_salt
+#  sensitive   = true
+#}
