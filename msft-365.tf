@@ -3,6 +3,7 @@
 module "worklytics_connectors_msft_365" {
   source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.4.36"
 
+
   enabled_connectors     = var.enabled_connectors
   environment_id         = var.environment_name
   msft_tenant_id         = var.msft_tenant_id
@@ -39,7 +40,6 @@ module "cognito_identity_pool" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
   source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.4.36"
-
 
   developer_provider_name = local.developer_provider_name
   name                    = "${local.env_qualifier}-azure-ad-federation"
