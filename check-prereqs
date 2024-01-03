@@ -101,3 +101,4 @@ else
   printf "Azure CLI version ${BLUE}`az --version --only-show-errors | head -n 1`${NC} is installed.\n"
   printf "\t- make sure ${BLUE}az account show${NC} is the user/tenant you expect. If not, ${BLUE}az login --allow-no-subscription${NC} to authenticate. $AZCLI_REASON\n"
 fi
+
