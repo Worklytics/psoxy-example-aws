@@ -18,7 +18,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.45"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.46"
 
   enabled_connectors               = var.enabled_connectors
   jira_cloud_id                    = var.jira_cloud_id
@@ -60,7 +60,6 @@ locals {
   )
 }
 
-
 locals {
   bulk_connectors = merge(
     module.worklytics_connectors.enabled_bulk_connectors,
@@ -96,7 +95,7 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.45"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.46"
 
   environment_name                = var.environment_name
   aws_account_id                  = var.aws_account_id
@@ -115,6 +114,7 @@ module "psoxy" {
   function_env_kms_key_arn        = var.project_aws_kms_key_arn
   logs_kms_key_arn                = var.project_aws_kms_key_arn
   aws_ssm_key_id                  = var.project_aws_kms_key_arn
+  use_api_gateway_v2              = var.use_api_gateway_v2
   bulk_sanitized_expiration_days  = var.bulk_sanitized_expiration_days
   bulk_input_expiration_days      = var.bulk_input_expiration_days
   api_connectors                  = local.api_connectors
@@ -122,6 +122,12 @@ module "psoxy" {
   custom_bulk_connector_rules     = var.custom_bulk_connector_rules
   custom_bulk_connector_arguments = var.custom_bulk_connector_arguments
   todo_step                       = local.max_auth_todo_step
+
+  #  vpc_config = {
+  #    vpc_id             = aws_vpc.main.id
+  #    security_group_ids = [aws_security_group.main.id]
+  #    subnet_ids         = [aws_subnet.main.id]
+  #  }
 }
 
 ## Worklytics connection configuration
@@ -136,7 +142,7 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.4.45"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.4.46"
 
   psoxy_instance_id  = each.key
   worklytics_host    = var.worklytics_host
