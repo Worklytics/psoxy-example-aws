@@ -54,7 +54,11 @@ git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
 ./init
 ```
 
- 6. Review your `terraform.tfvars` file; customize as needed (eg, comment out datasources you don't need).
+ 6. Review your `terraform.tfvars` file and `main.tf`; customize as needed (eg, comment out
+    datasources you don't need).
+
+    In particular, if you're NOT using Google Workspace as a data source, remove (delete) the `.tf`
+    files named `google-*.tf` AND from the `main.tf` file.
 
  7. Run `terraform plan` and review results to understand what will be created. Customize your
     `terraform.tfvars` or `main.tf` file if needed.
