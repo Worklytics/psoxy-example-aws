@@ -3,6 +3,7 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/Worklytics/psoxy-example-aws)](https://github.com/Worklytics/psoxy-example-aws/releases/latest)
 ![build passing](https://img.shields.io/github/actions/workflow/status/Worklytics/psoxy-example-aws/terraform_validate.yaml?label=build%20passing)
+![tfsec](https://img.shields.io/github/actions/workflow/status/Worklytics/psoxy-example-aws/tfsec.yml?label=tfsec)
 
 This is a template repo for a Terraform configuration that deploys the [Worklytics pseudonymization
 proxy (psoxy)](https://github.com/Worklytics/psoxy) on AWS.
