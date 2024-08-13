@@ -75,6 +75,11 @@ terraform plan
 terraform apply
 ```
 
+ 9. The above steps have created or modified various files that you should commit a code repository
+    or otherwise preserve. In particular `terraform.tfvars`, `main.tf`, `terraform.tfstate` (if you
+    ran `terraform` locally) and `.terraform.lock.hcl` should be preserved. Please do `git add` for
+    each and then `git commit` to save your changes.
+
 ## License
 
 The source code contained in this repo is licensed under the [Apache License, Version 2.0](LICENSE).
