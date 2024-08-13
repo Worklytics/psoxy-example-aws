@@ -1,4 +1,4 @@
-name: 'Terraform validate'
+name: 'tfsec'
 
 on:
   push:
