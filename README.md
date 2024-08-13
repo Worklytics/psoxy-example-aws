@@ -58,16 +58,19 @@ git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
     datasources you don't need).
 
     In particular, if you're NOT using Google Workspace as a data source, remove (delete) the `.tf`
-    files named `google-*.tf` AND from the `main.tf` file.
+    files named `google-*.tf` AND from the `main.tf` file. (Our `./init` script *should* have
+    removed these for you)
 
  7. Run `terraform plan` and review results to understand what will be created. Customize your
-    `terraform.tfvars` or `main.tf` file if needed.
+    `terraform.tfvars` or `main.tf` file if needed. (or push to your CI/CD system, if not running
+    locally)
 
 ```shell
 terraform plan
 ```
 
- 8. Run `terraform apply` to create the resources.
+ 8. Run `terraform apply` to create the resources. (or push to your CI/CD system to do this
+    automatically)
 ```shell
 terraform apply
 ```
