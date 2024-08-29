@@ -20,7 +20,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.57"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.4.58"
 
   enabled_connectors               = var.enabled_connectors
   jira_cloud_id                    = var.jira_cloud_id
@@ -99,12 +99,12 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.57"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.4.58"
 
   environment_name                     = var.environment_name
   aws_account_id                       = var.aws_account_id
   aws_ssm_param_root_path              = var.aws_ssm_param_root_path
-  aws_secrets_manager_path             = var.aws_secrets_manager_path
+  aws_secrets_manager_path             = coalesce(var.aws_secrets_manager_path, "${var.environment_name}_")
   psoxy_base_dir                       = var.psoxy_base_dir
   deployment_bundle                    = var.deployment_bundle
   install_test_tool                    = var.install_test_tool
@@ -156,7 +156,7 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.4.57"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.4.58"
 
   psoxy_instance_id    = each.key
   worklytics_host      = var.worklytics_host
