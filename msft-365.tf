@@ -1,21 +1,22 @@
 # BEGIN MSFT
 
 module "worklytics_connectors_msft_365" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.4.59"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.4.60"
 
-  enabled_connectors                  = var.enabled_connectors
-  environment_id                      = var.environment_name
-  msft_tenant_id                      = var.msft_tenant_id
-  example_msft_user_guid              = var.example_msft_user_guid
-  msft_owners_email                   = var.msft_owners_email
-  msft_teams_example_team_guid        = var.msft_teams_example_team_guid
-  msft_teams_example_channel_guid     = var.msft_teams_example_channel_guid
-  msft_teams_example_chat_guid        = var.msft_teams_example_chat_guid
-  msft_teams_example_call_guid        = var.msft_teams_example_call_guid
-  msft_teams_example_call_record_guid = var.msft_teams_example_call_record_guid
-  msft_connector_app_object_id        = var.msft_connector_app_object_id
-  todos_as_local_files                = var.todos_as_local_files
-  todo_step                           = 1
+  enabled_connectors                         = var.enabled_connectors
+  environment_id                             = var.environment_name
+  msft_tenant_id                             = var.msft_tenant_id
+  example_msft_user_guid                     = var.example_msft_user_guid
+  msft_owners_email                          = var.msft_owners_email
+  msft_teams_example_team_guid               = var.msft_teams_example_team_guid
+  msft_teams_example_channel_guid            = var.msft_teams_example_channel_guid
+  msft_teams_example_chat_guid               = var.msft_teams_example_chat_guid
+  msft_teams_example_call_guid               = var.msft_teams_example_call_guid
+  msft_teams_example_call_record_guid        = var.msft_teams_example_call_record_guid
+  msft_connector_app_object_id               = var.msft_connector_app_object_id
+  msft_teams_example_online_meeting_join_url = var.msft_teams_example_online_meeting_join_url
+  todos_as_local_files                       = var.todos_as_local_files
+  todo_step                                  = 1
 }
 
 provider "azuread" {
@@ -45,7 +46,7 @@ data "aws_region" "current" {
 module "cognito_identity_pool" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.4.59"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.4.60"
 
   developer_provider_name = local.developer_provider_name
   name                    = "${local.env_qualifier}-azure-ad-federation"
@@ -57,24 +58,24 @@ locals {
   # either ONE shared, or ONE per connector
   shared_connector = local.provision_entraid_apps ? null : module.worklytics_connectors_msft_365.enabled_api_connectors[keys(module.worklytics_connectors_msft_365.enabled_api_connectors)[0]]
   cognito_identity_login_ids = local.provision_entraid_apps ? {
-      for k, msft_connector in module.worklytics_connectors_msft_365.enabled_api_connectors :
-      k => msft_connector.connector.client_id
+    for k, msft_connector in module.worklytics_connectors_msft_365.enabled_api_connectors :
+    k => msft_connector.connector.client_id
     } : {
-      "shared" : local.shared_connector.connector.client_id
-    }
+    "shared" : local.shared_connector.connector.client_id
+  }
 }
 
 module "cognito_identity" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-identity-cli?ref=v0.4.59"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-identity-cli?ref=v0.4.60"
 
   aws_region       = data.aws_region.current.id
   aws_role         = var.aws_assume_role_arn
   identity_pool_id = module.cognito_identity_pool[0].pool_id
   login_ids = {
     for k, client_id in local.cognito_identity_login_ids :
-     k => "${local.developer_provider_name}=${client_id}"
+    k => "${local.developer_provider_name}=${client_id}"
   }
 }
 
@@ -88,14 +89,14 @@ resource "aws_iam_role_policy_attachment" "cognito_lambda_policy" {
 locals {
 
   enabled_to_entraid_object = { for k, msft_connector in module.worklytics_connectors_msft_365.enabled_api_connectors : k => {
-      connector_id: msft_connector.connector.id
-      display_name: msft_connector.display_name
+    connector_id : msft_connector.connector.id
+    display_name : msft_connector.display_name
     }
   }
   shared_to_entraid_object = {
     "shared" : {
-      connector_id: try(local.shared_connector.connector.id, null),
-      display_name: "Shared"
+      connector_id : try(local.shared_connector.connector.id, null),
+      display_name : "Shared"
     }
   }
 }
@@ -103,7 +104,7 @@ locals {
 module "msft_connection_auth_federation" {
   for_each = local.provision_entraid_apps ? local.enabled_to_entraid_object : local.shared_to_entraid_object
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/azuread-federated-credentials?ref=v0.4.59"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/azuread-federated-credentials?ref=v0.4.60"
 
   application_object_id = each.value.connector_id
   display_name          = "${local.env_qualifier}AccessFromAWS"
