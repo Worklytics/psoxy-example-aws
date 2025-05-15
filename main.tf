@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.3, < 1.11"
+  required_version = ">= 1.3, < 2.0"
 
   required_providers {
     # for the infra that will host Psoxy instances
@@ -20,7 +20,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.5.1"
 
   enabled_connectors               = var.enabled_connectors
   jira_cloud_id                    = var.jira_cloud_id
@@ -53,6 +53,7 @@ locals {
     module.worklytics_connectors.todos,
     module.worklytics_connectors_google_workspace.todos,
     module.worklytics_connectors_msft_365.todos,
+    module.psoxy.setup_todos,
     []
   )
 
@@ -99,7 +100,7 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.5.1"
 
   environment_name                     = var.environment_name
   aws_account_id                       = var.aws_account_id
@@ -155,7 +156,7 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.5.1"
 
   proxy_instance_id    = each.key
   worklytics_host      = var.worklytics_host

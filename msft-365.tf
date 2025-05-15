@@ -1,7 +1,7 @@
 # BEGIN MSFT
 
 module "worklytics_connectors_msft_365" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors-msft-365?ref=v0.5.1"
 
   enabled_connectors                         = var.enabled_connectors
   environment_id                             = var.environment_name
@@ -46,7 +46,7 @@ data "aws_region" "current" {
 module "cognito_identity_pool" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-pool?ref=v0.5.1"
 
   developer_provider_name = local.developer_provider_name
   name                    = "${local.env_qualifier}-azure-ad-federation"
@@ -68,7 +68,7 @@ locals {
 module "cognito_identity" {
   count = local.msft_365_enabled ? 1 : 0 # only provision identity pool if MSFT-365 connectors are enabled
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-identity-cli?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-cognito-identity-cli?ref=v0.5.1"
 
   aws_region       = data.aws_region.current.id
   aws_role         = var.aws_assume_role_arn
@@ -104,7 +104,7 @@ locals {
 module "msft_connection_auth_federation" {
   for_each = local.provision_entraid_apps ? local.enabled_to_entraid_object : local.shared_to_entraid_object
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/azuread-federated-credentials?ref=v0.5.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/azuread-federated-credentials?ref=v0.5.1"
 
   application_id = each.value.connector_id
   display_name   = "${local.env_qualifier}AccessFromAWS"
