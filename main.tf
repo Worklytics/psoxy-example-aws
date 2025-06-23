@@ -20,7 +20,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.5.2"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.5.3"
 
   enabled_connectors               = var.enabled_connectors
   jira_cloud_id                    = var.jira_cloud_id
@@ -101,7 +101,7 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.5.2"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.5.3"
 
   environment_name                     = var.environment_name
   aws_account_id                       = var.aws_account_id
@@ -131,9 +131,16 @@ module "psoxy" {
   bulk_input_expiration_days           = var.bulk_input_expiration_days
   api_connectors                       = local.api_connectors
   bulk_connectors                      = local.bulk_connectors
+  webhook_collectors = { for k, v in var.webhook_collectors : k => merge(
+    v,
+    {
+      example_payload = file(v.example_payload_file)
+    }
+  ) }
   provision_bucket_public_access_block = var.provision_bucket_public_access_block
   custom_bulk_connector_rules          = var.custom_bulk_connector_rules
   custom_bulk_connector_arguments      = var.custom_bulk_connector_arguments
+  custom_side_outputs                  = var.custom_side_outputs
   todo_step                            = local.max_auth_todo_step
   todos_as_local_files                 = var.todos_as_local_files
 
@@ -157,7 +164,7 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.5.2"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-psoxy-connection-aws?ref=v0.5.3"
 
   proxy_instance_id    = each.key
   worklytics_host      = var.worklytics_host
