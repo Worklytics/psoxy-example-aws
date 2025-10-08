@@ -17,8 +17,8 @@ You'll need:
   - a Bash-like shell environment on Linux, MacOS, or [WSL on Windows](https://learn.microsoft.com/en-us/windows/wsl/install).
   - [`git` installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), although it
     is usually included on those platforms (check with `git --version`).
-  - an AWS account and credentials, as described in [Psoxy's AWS - Getting Started docs](https://github.com/Worklytics/psoxy/blob/v0.4.37/docs/aws/getting-started.md)
-  - the [prerequisites for Psoxy](https://github.com/Worklytics/psoxy/blob/v0.4.37/README.md#prerequisites)
+  - an AWS account and credentials, as described in [Psoxy's AWS - Getting Started docs](https://github.com/Worklytics/psoxy/blob/v0.5.9/docs/aws/getting-started.md)
+  - the [prerequisites for Psoxy](https://github.com/Worklytics/psoxy/blob/v0.5.9/README.md#prerequisites)
     itself, although this example will attempt to help you check those.
 
 ### Getting Started
@@ -36,7 +36,7 @@ Clone the resulting repo to your machine.  Example command below, just fill in y
 git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
 ```
 
-1a. **Manual template setup** (if you *cannot* 'Use this template', perhaps because your organization doesn't use GitHub or you need to use a different git host, you can manually create a copy:
+- Alternatively **use template outside GitHub** (if you *cannot* 'Use this template', perhaps because your organization doesn't use GitHub or you need to use a different git host, you can manually create a copy:
    - Clone this repository to your local machine:
      ```shell
      git clone https://github.com/Worklytics/psoxy-example-aws.git
@@ -50,7 +50,7 @@ git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
      ```shell
      git init
      git add .
-     git commit -m "Initial commit from psoxy-example-aws template"
+     git commit -m "Initial commit from psoxy-example template"
      ```
    - Create a new repository on your preferred git hosting service (GitLab, Bitbucket, etc.)
    - Add your new repository as the remote origin:
@@ -58,6 +58,14 @@ git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
      git remote add origin https://your-git-host.com/your-org/your-repo-name.git
      git branch -M main
      git push -u origin main
+     ```
+
+- Alternatively, **use this in a monorepo** (eg, you maintain a monorepo with lots of terraform configurations, and you want to add this to those)
+  - Clone this repository to your local machine and copy its contents (excluding hidden stuff like `.git` files into your monorepo)
+     ```shell
+     git clone https://github.com/Worklytics/psoxy-example-aws.git
+     rm -rf psoxy-example-aws/.git
+     cp -r psoxy-example-aws ${PATH_TO_MONO_REPO}/
      ```
 
 2. Check your prereqs. Review versions and install anything needed.
@@ -69,8 +77,8 @@ git clone https://github.com/{{YOUR_ORG_ID}}/{{YOUR_REPO_NAME}}.git
 3. Authenticate your tools as needed:
 
    - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) - `aws get-caller-identity` should work and return your expected account/user
-   - if plan to get data from Google Workspace, auth [GCloud CLI](https://cloud.google.com/sdk/docs/authorizing) - `gcloud auth login` to authenticate, then `gcloud auth list` to verify you have expected account/user
-   - if plan to get data from Microsoft 365, auth [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) - `az login --allow-no-subscription` to authenticate, then `az account list` to verify you have expected account/user
+   - if plan to get data from Google Workspace, auth [GCloud CLI](https://cloud.google.com/sdk/docs/authorizing) - `gcloud auth login` to authenticate, then `gcloud auth list` to verify you have the expected account/user
+   - if plan to get data from Microsoft 365, auth [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) - `az login --allow-no-subscription` to authenticate, then `az account list` to verify you have the expected account/user
 
 4. Initialize your configuration
 
