@@ -20,7 +20,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.6.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.6.1"
 
   enabled_connectors                       = var.enabled_connectors
   connector_settings                       = var.connector_settings
@@ -111,7 +111,7 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.6.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.6.1"
 
   environment_name                     = var.environment_name
   aws_account_id                       = var.aws_account_id
@@ -140,6 +140,8 @@ module "psoxy" {
   secrets_store_implementation         = var.secrets_store_implementation
   bulk_sanitized_expiration_days       = var.bulk_sanitized_expiration_days
   bulk_input_expiration_days           = var.bulk_input_expiration_days
+  allowed_data_access_ip_blocks        = var.allowed_data_access_ip_blocks
+  allowed_webhook_ip_blocks            = var.allowed_webhook_ip_blocks
   api_connectors                       = local.api_connectors
   bulk_connectors                      = local.bulk_connectors
   webhook_collectors = { for k, v in var.webhook_collectors : k => merge(
@@ -154,6 +156,7 @@ module "psoxy" {
   custom_side_outputs                  = var.custom_side_outputs
   todo_step                            = local.max_auth_todo_step
   todos_as_local_files                 = var.todos_as_local_files
+  enable_remote_resources              = true
 
 
   #  vpc_config = {
@@ -185,7 +188,7 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-proxy-connection-aws?ref=v0.6.0"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-proxy-connection-aws?ref=v0.6.1"
 
   proxy_instance_id    = each.key
   worklytics_host      = var.worklytics_host
