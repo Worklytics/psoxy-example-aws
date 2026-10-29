@@ -24,7 +24,7 @@ terraform {
 
 # general cases
 module "worklytics_connectors" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.7.1"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-connectors?ref=v0.7.2"
 
   enabled_connectors                       = var.enabled_connectors
   connector_settings                       = var.connector_settings
@@ -123,7 +123,7 @@ locals {
 }
 
 module "psoxy" {
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.7.1"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/aws-host?ref=v0.7.2"
 
   environment_name                     = var.environment_name
   aws_account_id                       = var.aws_account_id
@@ -201,7 +201,7 @@ locals {
 module "connection_in_worklytics" {
   for_each = local.all_instances
 
-  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-proxy-connection-aws?ref=v0.7.1"
+  source = "git::https://github.com/worklytics/psoxy//infra/modules/worklytics-proxy-connection-aws?ref=v0.7.2"
 
   proxy_instance_id    = each.key
   worklytics_host      = var.worklytics_host
@@ -250,6 +250,11 @@ output "webhook_collector_instances" {
     test_examples              = try(v.test_examples, [])
     provisioned_auth_key_pairs = try(v.provisioned_auth_key_pairs, [])
   } }
+}
+
+output "lookup_tables" {
+  description = "S3 bucket names for lookup table outputs (lookup_table_builders keys). Empty map when lookup tables are not configured."
+  value       = module.psoxy.lookup_tables
 }
 
 output "deployment_platform" {
